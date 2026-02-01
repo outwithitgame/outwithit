@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Out With It! - Join Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #2B5F2D 0%, #1E4620 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            border-radius: 24px;
+            padding: 40px 32px;
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        .emoji {
+            font-size: 64px;
+            margin-bottom: 16px;
+        }
+        h1 {
+            color: #2B5F2D;
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+        .subtitle {
+            color: #6B7280;
+            font-size: 16px;
+            margin-bottom: 24px;
+        }
+        .room-code-box {
+            background: #F9E547;
+            border-radius: 16px;
+            padding: 16px 32px;
+            margin-bottom: 24px;
+        }
+        .room-code-label {
+            color: #2B5F2D;
+            font-size: 14px;
+            opacity: 0.7;
+        }
+        .room-code {
+            color: #2B5F2D;
+            font-size: 36px;
+            font-weight: bold;
+            letter-spacing: 4px;
+        }
+        .open-btn {
+            background: #2B5F2D;
+            color: white;
+            border: none;
+            border-radius: 16px;
+            padding: 16px 32px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            margin-bottom: 16px;
+            transition: background 0.2s;
+        }
+        .open-btn:hover {
+            background: #1E4620;
+        }
+        .download-section {
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 1px solid #E5E7EB;
+        }
+        .download-text {
+            color: #6B7280;
+            font-size: 14px;
+            margin-bottom: 12px;
+        }
+        .store-btn {
+            display: inline-block;
+            background: #000;
+            color: white;
+            text-decoration: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        .store-btn:hover {
+            background: #333;
+        }
+        .manual-code {
+            margin-top: 20px;
+            padding: 16px;
+            background: #F3F4F6;
+            border-radius: 12px;
+            font-size: 14px;
+            color: #6B7280;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="emoji">🎉</div>
+        <h1>You're Invited!</h1>
+        <p class="subtitle">Someone wants you to join their game</p>
+        
+        <div class="room-code-box">
+            <div class="room-code-label">Room Code</div>
+            <div class="room-code" id="roomCode">------</div>
+        </div>
+        
+        <button class="open-btn" onclick="openApp()">🎮 Open App & Join</button>
+        
+        <div class="manual-code">
+            <strong>Can't open automatically?</strong><br>
+            Open the app and enter code: <strong id="manualCode">------</strong>
+        </div>
+        
+        <div class="download-section">
+            <p class="download-text">Don't have the app yet?</p>
+            <a href="#" class="store-btn" id="playStoreLink">📱 Get it on Google Play</a>
+        </div>
+    </div>
+
+    <script>
+        // Handle GitHub Pages SPA redirect (from 404.html)
+        (function() {
+            const params = new URLSearchParams(window.location.search);
+            const redirectPath = params.get('p');
+            if (redirectPath) {
+                // Replace URL without the query param, preserving the path
+                window.history.replaceState(null, '', redirectPath);
+            }
+        })();
+
+        // Extract room code from URL path: /join/ABC123
+        function getRoomCode() {
+            const path = window.location.pathname;
+            const match = path.match(/\/join\/([A-Za-z0-9]+)/i);
+            return match ? match[1].toUpperCase() : null;
+        }
+
+        // Initialize page
+        const roomCode = getRoomCode();
+        
+        if (roomCode) {
+            document.getElementById('roomCode').textContent = roomCode;
+            document.getElementById('manualCode').textContent = roomCode;
+        } else {
+            document.getElementById('roomCode').textContent = 'Invalid';
+            document.getElementById('manualCode').textContent = 'N/A';
+        }
+
+        // Try to open the app
+        function openApp() {
+            if (!roomCode) {
+                alert('Invalid room code!');
+                return;
+            }
+            
+            // Try the custom scheme first
+            const deepLink = 'outwithit://join/' + roomCode;
+            
+            // Create a hidden iframe to try opening the app
+            const iframe = document.createElement('iframe');
+            iframe.style.display = 'none';
+            iframe.src = deepLink;
+            document.body.appendChild(iframe);
+            
+            // Also try direct navigation
+            window.location.href = deepLink;
+            
+            // If app doesn't open within 2 seconds, show Play Store
+            setTimeout(function() {
+                // Check if page is still visible (app didn't open)
+                if (!document.hidden) {
+                    // Redirect to Play Store (update with your actual Play Store URL)
+                    // window.location.href = 'https://play.google.com/store/apps/details?id=com.jake.outwithit';
+                }
+            }, 2000);
+        }
+
+        // Update Play Store link (replace with your actual link when published)
+        // document.getElementById('playStoreLink').href = 'https://play.google.com/store/apps/details?id=com.jake.outwithit';
+    </script>
+</body>
+</html>
